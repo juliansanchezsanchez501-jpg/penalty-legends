@@ -113,6 +113,18 @@ function fe(c,x,y,rx,ry,col){c.fillStyle=col;c.beginPath();c.ellipse(x,y,rx,ry,0
 
 /* ================= cámara 3D ================= */
 var cv=$("cv"),ctx=cv.getContext("2d");
+/* ===== render en pixel art: se dibuja pequeño y se agranda sin suavizar ===== */
+var PXW=320,PXH=240,PXS=PXW/800;
+var pxBuf=document.createElement("canvas");pxBuf.width=PXW;pxBuf.height=PXH;
+var SCR=ctx;
+ctx=pxBuf.getContext("2d");
+function pxReset(){
+  ctx.imageSmoothingEnabled=false;
+  ctx.mozImageSmoothingEnabled=false;
+  ctx.webkitImageSmoothingEnabled=false;
+  ctx.setTransform(PXS,0,0,PXS,0,0);
+}
+pxReset();
 var W=800,H=600;
 var CX=400,ZC=26,S0=62.8,F=S0*ZC,CAMH=3.0,GROUND0=332,YH=GROUND0-CAMH*S0;
 function proj(X,Y,Z){var s=F/(ZC-Z);return {x:CX+X*s,y:YH+(CAMH-Y)*s,s:s};}
@@ -898,13 +910,13 @@ function drawShooter(){
 var blades=[];
 (function(){var r=rng(21);for(var i=0;i<540;i++){var y=292+Math.pow(r(),0.75)*308,d=(y-288)/312;blades.push({x:r()*W,y:y,h:3+d*22,ph:r()*TAU});}})();
 function drawGrassLife(t){
-  var cols=["rgba(185,240,120,.55)","rgba(70,160,60,.65)","rgba(18,85,30,.6)"];
+  var cols=["rgba(185,240,120,.30)","rgba(70,160,60,.38)","rgba(18,85,30,.34)"];
   ctx.lineCap="round";
   for(var c=0;c<3;c++){
-    ctx.strokeStyle=cols[c];ctx.lineWidth=1.5;ctx.beginPath();
+    ctx.strokeStyle=cols[c];ctx.lineWidth=2.4;ctx.beginPath();
     for(var i=c;i<blades.length;i+=3){
       var b=blades[i],gust=Math.max(0,Math.sin(t*0.8-b.x*0.007)),sw=(Math.sin(t*2.1+b.x*0.03+b.ph)*0.45+gust*1.1)*b.h*0.24;
-      ctx.moveTo(b.x,b.y);ctx.quadraticCurveTo(b.x+sw*0.35,b.y-b.h*0.6,b.x+sw,b.y-b.h);
+      ctx.moveTo(b.x,b.y);ctx.quadraticCurveTo(b.x+sw*0.35,b.y-b.h*0.35,b.x+sw,b.y-b.h*0.55);
     }
     ctx.stroke();
   }
@@ -1225,18 +1237,35 @@ function drawChampion(t){
 }
 
 /* ================= render ================= */
-function render(t){
+function renderGame(t){
   ctx.save();
   if(G.shake>0.2)ctx.translate(rand(-G.shake,G.shake),rand(-G.shake,G.shake));
   if(G.phase==="champion"){drawChampion(t);ctx.restore();return;}
   ctx.drawImage(bg,0,0);
-  drawGrassLife(t);drawBoards(t);drawCrowd(t);drawScoreboard();
+  drawGrassLife(t);drawBoards(t);drawCrowd(t);
   drawGoalBack();drawKeeper();
   if(ball.Z<=0.05)drawBall();
   drawFrame();
   if(ball.Z>0.05)drawBall();
-  drawShooter();drawFx();drawAim();drawConf();drawBanner();
+  drawShooter();drawFx();drawAim();drawConf();
   ctx.restore();
+}
+/* agranda el búfer y pinta los textos nítidos encima */
+function render(t){
+  pxReset();
+  renderGame(t);
+  SCR.imageSmoothingEnabled=false;
+  SCR.mozImageSmoothingEnabled=false;
+  SCR.webkitImageSmoothingEnabled=false;
+  SCR.setTransform(1,0,0,1,0,0);
+  SCR.clearRect(0,0,800,600);
+  SCR.drawImage(pxBuf,0,0,PXW,PXH,0,0,800,600);
+  var keep=ctx;ctx=SCR;
+  ctx.save();
+  if(G.phase!=="champion")drawScoreboard();
+  drawBanner();
+  ctx.restore();
+  ctx=keep;
 }
 
 /* ================= tienda y taller ================= */
