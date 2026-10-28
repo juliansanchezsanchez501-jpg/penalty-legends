@@ -1,12 +1,13 @@
 # Street Legends ⚽
 
-Juego web de fútbol arcade. Se abre con `index.html`.
+Juego web de fútbol arcade con gráficos de pixel art (estilo consola portátil).
+Se abre con `index.html`.
 
 ## Qué hay
 
-- **Ciudad deportiva**: menú en 2D. Andas por la ciudad y entras en cada sitio.
-- **Canchas**: pachanga 3 contra 3 más portero, estilo Inazuma, con súper tiro.
-- **Estadio**: liga de 8 equipos y 7 jornadas, rollo OSM. Antes de cada partido ves tu carta y la del rival.
+- **Ciudad deportiva**: pueblo en 2D con tiles. Andas por él y entras en cada casa.
+- **Canchas**: pachanga 3 contra 3 más portero, estilo Inazuma, con súper tiro y zoom.
+- **Estadio**: liga de 8 equipos y 7 jornadas, rollo OSM. Antes de cada partido ves tu carta y la del rival. Al acabar la temporada, **los equipos mejores pueden ficharte**: cobras una prima y tus compañeros suben de nivel.
 - **Penaltis**: la tanda de 5 tiros (`penaltis.html`), con 4 competiciones.
 - **Gimnasio**: subes tiro, velocidad, regate, pase y físico. Tu carta sube con ellos.
 - **Tienda**: técnicas, auras, peinados y camisetas.
